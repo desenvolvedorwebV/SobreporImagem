@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sobrepor Imagem com Marca d'Água</title>
+  <style>
+    canvas {
+      border: 1px solid #000;
+      display: block;
+      margin-top: 10px;
+      max-width: 100%;
+    }
+    #download {
+      margin-top: 10px;
+      padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Sobrepor Imagem</h2>
+  <input type="file" id="upload" accept="image/*"><br>
+  <canvas id="canvas"></canvas><br>
+  <button id="download" style="display:none;">📥 Baixar Imagem</button>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const downloadBtn = document.getElementById('download');
+
+    // Substitua por sua imagem transparente (marca d'água ou moldura)
+    const overlaySrc = 'marca-dagua.png'; // Imagem PNG com transparência
+    const overlayImage = new Image();
+    overlayImage.src = overlaySrc;
+
+    upload.addEventListener('change', function (event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const baseImage = new Image();
+        baseImage.onload = function () {
+          // Ajusta o canvas ao tamanho da imagem carregada
+          canvas.width = baseImage.width;
+          canvas.height = baseImage.height;
+
+          // Desenha a imagem de fundo
+          ctx.drawImage(baseImage, 0, 0);
+
+          // Quando a imagem transparente estiver pronta, desenha-a
+          overlayImage.onload = function () {
+            ctx.drawImage(overlayImage, 0, 0, baseImage.width, baseImage.height);
+            downloadBtn.style.display = 'inline-block';
+          };
+
+          // Se a overlay já estiver carregada, desenha imediatamente
+          if (overlayImage.complete) {
+            ctx.drawImage(overlayImage, 0, 0, baseImage.width, baseImage.height);
+            downloadBtn.style.display = 'inline-block';
+          }
+        };
+        baseImage.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    downloadBtn.addEventListener('click', function () {
+      const link = document.createElement('a');
+      link.download = 'marca_dagua.png.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
