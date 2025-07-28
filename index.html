@@ -2,26 +2,64 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sobrepor Imagem com Marca d'Água</title>
   <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      margin: 10px 0;
+      width: 100%;
+      max-width: 100%;
+    }
+
     canvas {
       border: 1px solid #000;
       display: block;
-      margin-top: 10px;
-      max-width: 100%;
+      margin: 10px auto;
+      width: 100%;
+      height: auto;
     }
+
     #download {
       margin-top: 10px;
-      padding: 8px 16px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #download:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-  <h2>Sobrepor Imagem</h2>
-  <input type="file" id="upload" accept="image/*"><br>
-  <canvas id="canvas"></canvas><br>
-  <button id="download" style="display:none;">📥 Baixar Imagem</button>
+  <div class="container">
+    <h2>Sobrepor Imagem</h2>
+    <input type="file" id="upload" accept="image/*">
+    <canvas id="canvas"></canvas>
+    <button id="download" style="display:none;">📥 Baixar Imagem</button>
+  </div>
 
   <script>
     const upload = document.getElementById('upload');
@@ -29,8 +67,7 @@
     const ctx = canvas.getContext('2d');
     const downloadBtn = document.getElementById('download');
 
-    // Substitua por sua imagem transparente (marca d'água ou moldura)
-    const overlaySrc = 'marca-dagua.png'; // Imagem PNG com transparência
+    const overlaySrc = 'marca-dagua.png';
     const overlayImage = new Image();
     overlayImage.src = overlaySrc;
 
@@ -43,20 +80,16 @@
       reader.onload = function (e) {
         const baseImage = new Image();
         baseImage.onload = function () {
-          // Ajusta o canvas ao tamanho da imagem carregada
           canvas.width = baseImage.width;
           canvas.height = baseImage.height;
 
-          // Desenha a imagem de fundo
           ctx.drawImage(baseImage, 0, 0);
 
-          // Quando a imagem transparente estiver pronta, desenha-a
           overlayImage.onload = function () {
             ctx.drawImage(overlayImage, 0, 0, baseImage.width, baseImage.height);
             downloadBtn.style.display = 'inline-block';
           };
 
-          // Se a overlay já estiver carregada, desenha imediatamente
           if (overlayImage.complete) {
             ctx.drawImage(overlayImage, 0, 0, baseImage.width, baseImage.height);
             downloadBtn.style.display = 'inline-block';
@@ -70,10 +103,9 @@
 
     downloadBtn.addEventListener('click', function () {
       const link = document.createElement('a');
-      link.download = 'marca_dagua.png.png';
+      link.download = 'imagem_com_marca.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
     });
   </script>
 </body>
-</html>
